@@ -5,24 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will you be my Valentine? 💕</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="hearts-bg"></div>
+    <div class="noise-overlay"></div>
 
-    <div class="container">
-        <h1>Will you be my Valentine? 💕</h1>
-
-        <div class="gif-container">
-            <img id="cat-gif" src="https://media.tenor.com/EBV7OT7ACfwAAAAj/u-u-qua-qua-u-quaa.gif" alt="cute character">
+    <div class="container intro-card">
+        <p class="eyebrow">For my papacito 💌</p>
+        <h1>Will you be my Valentine?</h1>
+        <p class="subtext">Say yes and I’ll stop being dramatic... maybe 😏</p>
+        <div class="gif-container" id="gif-wrap">
+            <img id="cat-gif" src="https://media.tenor.com/EBV7OT7ACfwAAAAj/u-u-qua-qua-u-quaa.gif" alt="cute character waiting for a valentine response">
+            <span class="blush blush-left">💗</span>
+            <span class="blush blush-right">💗</span>
         </div>
 
-        <div class="buttons">
-            <button id="yes-btn" onclick="handleYesClick()">Yes</button>
-            <button id="no-btn" onclick="handleNoClick()">No</button>
+        <div class="buttons intro-cta">
+            <button id="yes-btn" onclick="handleYesClick()">YES 💖</button>
+            <button id="no-btn" onclick="handleNoClick()">No 🙄</button>
         </div>
         <div id="tease-toast"></div>
+        <div id="celebration-overlay" aria-hidden="true"></div>
     </div>
 
     <audio id="bg-music" loop autoplay muted>
