@@ -21,6 +21,11 @@ const noMessages = [
     "Too slow, now I run 😜"
 ]
 
+const STORAGE_KEYS = {
+    visitedCount: 'vdayVisitedCount',
+    runawayUnlocked: 'vdayRunawayUnlocked'
+}
+
 const yesTeasePokes = [
     "Aww, eager! tap no once so he can show you his drama arc 😏",
     "Just one no... for the plot 👀",
@@ -31,6 +36,7 @@ const yesTeasePokes = [
 let yesTeasedCount = 0
 let noClickCount = 0
 let runawayEnabled = false
+let runawayInitialized = false
 let musicPlaying = true
 
 const catGif = document.getElementById('cat-gif')
@@ -38,6 +44,31 @@ const gifWrap = document.getElementById('gif-wrap')
 const yesBtn = document.getElementById('yes-btn')
 const noBtn = document.getElementById('no-btn')
 const music = document.getElementById('bg-music')
+const eyebrow = document.querySelector('.eyebrow')
+const subtext = document.querySelector('.subtext')
+
+const overlay = document.getElementById('celebration-overlay')
+
+initializeSmartExperience()
+
+yesBtn.addEventListener('mouseenter', () => {
+    gifWrap.classList.add('happy')
+    gifWrap.classList.remove('sad')
+})
+
+yesBtn.addEventListener('mouseleave', () => {
+    gifWrap.classList.remove('happy')
+})
+
+noBtn.addEventListener('mouseenter', () => {
+    gifWrap.classList.add('sad')
+    gifWrap.classList.remove('happy')
+    if (!runawayEnabled) nudgeNoButton()
+})
+
+noBtn.addEventListener('mouseleave', () => {
+    gifWrap.classList.remove('sad')
+})
 
 const overlay = document.getElementById('celebration-overlay')
 
@@ -109,6 +140,9 @@ function showTeaseMessage(msg) {
 }
 
 function handleNoClick() {
+    const stageIndex = Math.min(noClickCount, noStages.length - 1)
+    const currentStage = noStages[stageIndex]
+    noBtn.textContent = currentStage.message
     noClickCount++
 
     const msgIndex = Math.min(noClickCount, noMessages.length - 1)
@@ -158,7 +192,15 @@ function bounceCharacter() {
 }
 
 function enableRunaway() {
-    noBtn.addEventListener('mouseover', runAway)
+    if (runawayInitialized) return
+
+    runawayInitialized = true
+    yesBtn.classList.add('runaway-pulse')
+    noBtn.style.display = 'inline-block'
+    noBtn.style.visibility = 'visible'
+    noBtn.style.opacity = '1'
+    noBtn.style.fontSize = '0.95rem'
+    document.addEventListener('mousemove', runAway)
     noBtn.addEventListener('touchstart', runAway, { passive: true })
 }
 
@@ -166,11 +208,13 @@ function runAway() {
     const margin = 18
     const btnW = noBtn.offsetWidth
     const btnH = noBtn.offsetHeight
-    const maxX = window.innerWidth - btnW - margin
-    const maxY = window.innerHeight - btnH - margin
+    const minX = safeMargin
+    const minY = safeMargin
+    const maxX = Math.max(minX, viewportW - btnW - safeMargin)
+    const maxY = Math.max(minY, viewportH - btnH - safeMargin)
 
-    const randomX = Math.random() * maxX + margin / 2
-    const randomY = Math.random() * maxY + margin / 2
+    const randomX = minX + Math.random() * (maxX - minX)
+    const randomY = minY + Math.random() * (maxY - minY)
 
     noBtn.style.position = 'fixed'
     noBtn.style.left = `${randomX}px`
