@@ -12,12 +12,12 @@ const noStages = [
 let noClickCount = 0;
 let runawayEnabled = false;
 
-// SOLUCIÓN MÚSICA: Se activa al primer clic en cualquier parte
-document.addEventListener('click', function() {
+// ACTIVAR MÚSICA AL PRIMER CLIC
+document.body.addEventListener('click', function() {
     const audio = document.getElementById('bg-music');
-    if (audio && audio.paused) {
+    if (audio.paused) {
         audio.muted = false;
-        audio.play().catch(e => console.log("Audio waiting for interaction"));
+        audio.play().catch(e => console.log("Audio play blocked"));
     }
 }, { once: true });
 
@@ -35,14 +35,15 @@ function handleNoClick() {
         const stage = noStages[noClickCount];
         noBtn.textContent = stage.message;
         
-        // FORZAR CAMBIO DE GIF: Eliminamos y reasignamos
-        catGif.src = ""; 
-        setTimeout(() => { catGif.src = stage.gif; }, 10);
-        
+        // ACTUALIZACIÓN DE GIF FORZADA
+        catGif.src = stage.gif;
+
+        // CRECIMIENTO LIMITADO DEL BOTÓN YES
         const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-        if (currentSize < 60) { // Límite para que no rompa el cel
+        if (currentSize < 70) {
             yesBtn.style.fontSize = (currentSize * 1.3) + "px";
         }
+        
         noClickCount++;
     }
 
@@ -51,24 +52,27 @@ function handleNoClick() {
     }
 }
 
-function handleYesClick() { window.location.href = "yes.html"; }
+function handleYesClick() {
+    window.location.href = "yes.html";
+}
 
 function enableRunaway() {
     runawayEnabled = true;
     const noBtn = document.getElementById('no-btn');
     noBtn.style.position = 'fixed';
-    noBtn.style.zIndex = '9999';
     noBtn.textContent = "Well, you're stuck with me now 😏❤️";
     
-    // DETECCIÓN AGRESIVA: 200px de distancia para que no lo alcances
-    document.addEventListener('mousemove', (e) => {
+    // DETECCIÓN A 200PX (Imposible de alcanzar)
+    document.addEventListener('mousemove', function(e) {
         if (!runawayEnabled) return;
         const btnRect = noBtn.getBoundingClientRect();
         const x = btnRect.left + btnRect.width / 2;
         const y = btnRect.top + btnRect.height / 2;
         const dist = Math.hypot(e.clientX - x, e.clientY - y);
         
-        if (dist < 200) { moveButton(); }
+        if (dist < 200) {
+            moveButton();
+        }
     });
 }
 
