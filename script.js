@@ -1,45 +1,24 @@
-const noStages = [
-    {
-        message: "No 🙄",
-        gif: "https://media.tenor.com/EBV7OT7ACfwAAAAj/u-u-qua-qua-u-quaa.gif"
-    },
-    {
-        message: "Like... really? 🤨",
-        gif: "https://media1.tenor.com/m/uDugCXK4vI4AAAAd/chiikawa-hachiware.gif"
-    },
-    {
-        message: "What is going on with you? 🧐",
-        gif: "https://media.tenor.com/f_rkpJbH1s8AAAAj/somsom1012.gif"
-    },
-    {
-        message: "Is it that you dont see the YES option? 👀",
-        gif: "https://media.tenor.com/OGY9zdREsVAAAAAj/somsom1012.gif"
-    },
-    {
-        message: "Questioning my life choices 😭",
-        gif: "https://media1.tenor.com/m/WGfra-Y_Ke0AAAAd/chiikawa-sad.gif"
-    },
-    {
-        message: "Last no before chaos 😈",
-        gif: "https://media.tenor.com/5_tv1HquZlcAAAAj/chiikawa.gif"
-    },
-    {
-        message: "Okay… then who is SHEEEE? 🔍👀",
-        gif: "https://media1.tenor.com/m/uDugCXK4vI4AAAAC/chiikawa-hachiware.gif"
-    },
-    {
-        message: "Say yes and I’ll pretend this never happened 😌💞",
-        gif: "https://media.tenor.com/f_rkpJbH1s8AAAAj/somsom1012.gif"
-    },
-    {
-        message: "Well, you're stuck with me now 😏❤️",
-        gif: "https://media.tenor.com/CivArbX7NzQAAAAj/somsom1012.gif"
-    }
+const gifStages = [
+    "https://media.tenor.com/EBV7OT7ACfwAAAAj/u-u-qua-qua-u-quaa.gif",
+    "https://media1.tenor.com/m/uDugCXK4vI4AAAAd/chiikawa-hachiware.gif",
+    "https://media.tenor.com/f_rkpJbH1s8AAAAj/somsom1012.gif",
+    "https://media.tenor.com/OGY9zdREsVAAAAAj/somsom1012.gif",
+    "https://media1.tenor.com/m/WGfra-Y_Ke0AAAAd/chiikawa-sad.gif",
+    "https://media.tenor.com/CivArbX7NzQAAAAj/somsom1012.gif",
+    "https://media.tenor.com/5_tv1HquZlcAAAAj/chiikawa.gif",
+    "https://media1.tenor.com/m/uDugCXK4vI4AAAAC/chiikawa-hachiware.gif"
 ]
 
-const REENTRY_MESSAGES = [
-    "Hola de nuevo... ¿todavía pensándolo? 😏",
-    "Back again? I knew you couldn't resist... 💋"
+const noMessages = [
+    "No 🙈",
+    "Papacito... really? 😮",
+    "Think again, handsome 😌",
+    "Tiny guy is in shambles 😢",
+    "Okay now he's blushing + panicking 🫣",
+    "One yes and we both win 💞",
+    "Don't make me beg in 4K...",
+    "Last no before chaos 😭",
+    "Too slow, now I run 😜"
 ]
 
 const STORAGE_KEYS = {
@@ -71,6 +50,27 @@ const subtext = document.querySelector('.subtext')
 const overlay = document.getElementById('celebration-overlay')
 
 initializeSmartExperience()
+
+yesBtn.addEventListener('mouseenter', () => {
+    gifWrap.classList.add('happy')
+    gifWrap.classList.remove('sad')
+})
+
+yesBtn.addEventListener('mouseleave', () => {
+    gifWrap.classList.remove('happy')
+})
+
+noBtn.addEventListener('mouseenter', () => {
+    gifWrap.classList.add('sad')
+    gifWrap.classList.remove('happy')
+    if (!runawayEnabled) nudgeNoButton()
+})
+
+noBtn.addEventListener('mouseleave', () => {
+    gifWrap.classList.remove('sad')
+})
+
+const overlay = document.getElementById('celebration-overlay')
 
 yesBtn.addEventListener('mouseenter', () => {
     gifWrap.classList.add('happy')
@@ -145,6 +145,9 @@ function handleNoClick() {
     noBtn.textContent = currentStage.message
     noClickCount++
 
+    const msgIndex = Math.min(noClickCount, noMessages.length - 1)
+    noBtn.textContent = noMessages[msgIndex]
+
     const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize)
     yesBtn.style.fontSize = `${Math.min(currentSize * 1.28, 56)}px`
     const padY = Math.min(18 + noClickCount * 5, 64)
@@ -156,14 +159,14 @@ function handleNoClick() {
         noBtn.style.fontSize = `${Math.max(noSize * 0.84, 10)}px`
     }
 
-    swapGif(currentStage.gif)
+    const gifIndex = Math.min(noClickCount, gifStages.length - 1)
+    swapGif(gifStages[gifIndex])
 
     blushCharacter()
 
-    if (noClickCount >= noStages.length && !runawayEnabled) {
+    if (noClickCount >= 5 && !runawayEnabled) {
         enableRunaway()
         runawayEnabled = true
-        localStorage.setItem(STORAGE_KEYS.runawayUnlocked, 'true')
         showTeaseMessage('Oops. You unlocked RUNAWAY mode 💨')
     }
 }
@@ -201,22 +204,8 @@ function enableRunaway() {
     noBtn.addEventListener('touchstart', runAway, { passive: true })
 }
 
-function runAway(event) {
-    const safeMargin = 50
-    const btnRect = noBtn.getBoundingClientRect()
-
-    if (event?.type === 'mousemove') {
-        const btnCenterX = btnRect.left + btnRect.width / 2
-        const btnCenterY = btnRect.top + btnRect.height / 2
-        const dx = event.clientX - btnCenterX
-        const dy = event.clientY - btnCenterY
-        const distance = Math.hypot(dx, dy)
-
-        if (distance >= 100) return
-    }
-
-    const viewportW = window.innerWidth
-    const viewportH = window.innerHeight
+function runAway() {
+    const margin = 18
     const btnW = noBtn.offsetWidth
     const btnH = noBtn.offsetHeight
     const minX = safeMargin
@@ -256,59 +245,4 @@ function burstHearts() {
         overlay.appendChild(heart)
         setTimeout(() => heart.remove(), 900)
     }
-}
-
-
-function initializeSmartExperience() {
-    updateGreetingFromHistory()
-    updateCountdownMessage()
-    restoreRunawayStateFromHistory()
-}
-
-function updateGreetingFromHistory() {
-    const previousVisits = Number(localStorage.getItem(STORAGE_KEYS.visitedCount) || '0')
-
-    if (previousVisits > 0 && eyebrow) {
-        const tease = REENTRY_MESSAGES[Math.floor(Math.random() * REENTRY_MESSAGES.length)]
-        eyebrow.textContent = tease
-    }
-
-    localStorage.setItem(STORAGE_KEYS.visitedCount, String(previousVisits + 1))
-}
-
-function updateCountdownMessage() {
-    if (!subtext) return
-
-    const now = new Date()
-    const currentYear = now.getFullYear()
-    let target = new Date(currentYear, 1, 14)
-
-    if (now > target) {
-        target = new Date(currentYear + 1, 1, 14)
-    }
-
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const startOfTarget = new Date(target.getFullYear(), target.getMonth(), target.getDate())
-    const dayDiff = Math.round((startOfTarget - startOfToday) / 86400000)
-
-    if (dayDiff > 1) {
-        subtext.textContent = `Faltan ${dayDiff} días para Valentine's... ⏳`
-    } else if (dayDiff === 1) {
-        subtext.textContent = '¡Falta solo 1 día! El tiempo se acaba... 🔥'
-    } else {
-        subtext.textContent = '¡Hoy es el día! ¿Qué esperas? ❤️'
-    }
-}
-
-function restoreRunawayStateFromHistory() {
-    const runawayWasUnlocked = localStorage.getItem(STORAGE_KEYS.runawayUnlocked) === 'true'
-    if (!runawayWasUnlocked) return
-
-    const finalStage = noStages[noStages.length - 1]
-    noClickCount = noStages.length
-    runawayEnabled = true
-    noBtn.textContent = finalStage.message
-    swapGif(finalStage.gif)
-    enableRunaway()
-    setTimeout(() => runAway(), 250)
 }
