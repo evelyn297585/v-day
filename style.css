@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700;900&family=Pacifico&display=swap');
+
 body {
     margin: 0;
     display: flex;
@@ -8,7 +10,7 @@ body {
     overflow: hidden;
     background: linear-gradient(-45deg, #ff9a9e, #fecfef, #ffc2d1, #fbc2eb);
     background-size: 400% 400%;
-    animation: gradientBG 10s ease infinite;
+    animation: gradientBG 15s ease infinite;
 }
 
 @keyframes gradientBG {
@@ -17,13 +19,18 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-.container { text-align: center; z-index: 10; width: 90%; max-width: 500px; }
+.container {
+    text-align: center;
+    z-index: 10;
+    width: 100%;
+}
 
 .main-title {
     font-family: 'Pacifico', cursive;
     color: #ff4d6d;
-    font-size: 2.8rem;
+    font-size: 3rem;
     text-shadow: 2px 2px white;
+    margin-bottom: 20px;
 }
 
 #cat-gif {
@@ -32,18 +39,17 @@ body {
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-.cta-area { 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    gap: 15px; 
-    margin-top: 20px;
-    min-height: 100px;
+.cta-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    min-height: 120px;
 }
 
 button {
-    padding: 12px 25px;
-    font-size: 1.1rem;
+    padding: 15px 35px;
+    font-size: 1.2rem;
     font-weight: 800;
     border: none;
     border-radius: 50px;
@@ -52,15 +58,26 @@ button {
 }
 
 #yes-btn { background: #ff4d6d; color: white; }
-#no-btn { background: white; color: #ff4d6d; border: 2px solid #ff4d6d; z-index: 9999; }
+#no-btn { background: white; color: #ff4d6d; border: 2px solid #ff4d6d; }
 
+/* FIRMA "Mami" CON CUADRO ROSADO */
 .mami-signature {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 25px;
+    right: 25px;
     font-family: 'Dancing Script', cursive;
     font-size: 2rem;
     color: #ff4d6d;
-    text-shadow: 1px 1px white;
-    pointer-events: none;
+    background: rgba(255, 230, 235, 0.9);
+    padding: 10px 25px;
+    border-radius: 50px;
+    border: 2px solid #ffccd5;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+@media (max-width: 600px) {
+    .main-title { font-size: 2.2rem; }
+    #cat-gif { max-width: 170px; }
+    .mami-signature { font-size: 1.6rem; padding: 8px 15px; }
 }
