@@ -22,20 +22,20 @@ function handleNoClick() {
         return;
     }
 
-    noClickCount++;
-    
+    // Cambia al siguiente mensaje inmediatamente
     if (noClickCount < noStages.length) {
         const stage = noStages[noClickCount];
         noBtn.textContent = stage.message;
         catGif.src = stage.gif;
         
-        // El botón YES crece proporcionalmente
+        // El botón YES crece
         const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-        yesBtn.style.fontSize = (currentSize * 1.35) + "px";
-        yesBtn.style.padding = (parseFloat(window.getComputedStyle(yesBtn).padding) * 1.1) + "px";
+        yesBtn.style.fontSize = (currentSize * 1.4) + "px";
+        
+        noClickCount++;
     }
 
-    if (noClickCount >= noStages.length - 1) {
+    if (noClickCount >= noStages.length) {
         enableRunaway();
     }
 }
@@ -48,19 +48,21 @@ function enableRunaway() {
     runawayEnabled = true;
     const noBtn = document.getElementById('no-btn');
     noBtn.style.position = 'fixed';
-    noBtn.style.transition = 'all 0.2s ease-out';
+    noBtn.style.zIndex = '999';
+    noBtn.style.transition = 'all 0.15s ease-out';
     
     document.addEventListener('mousemove', (e) => {
         const btnRect = noBtn.getBoundingClientRect();
         const dist = Math.hypot(e.clientX - (btnRect.left + btnRect.width/2), e.clientY - (btnRect.top + btnRect.height/2));
-        if (dist < 120) { moveButton(); }
+        if (dist < 120) moveButton();
     });
 }
 
 function moveButton() {
     const noBtn = document.getElementById('no-btn');
-    const maxX = window.innerWidth - noBtn.offsetWidth - 60;
-    const maxY = window.innerHeight - noBtn.offsetHeight - 60;
-    noBtn.style.left = Math.max(20, Math.random() * maxX) + 'px';
-    noBtn.style.top = Math.max(20, Math.random() * maxY) + 'px';
+    const padding = 50;
+    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+    noBtn.style.left = Math.max(padding, Math.random() * maxX) + 'px';
+    noBtn.style.top = Math.max(padding, Math.random() * maxY) + 'px';
 }
