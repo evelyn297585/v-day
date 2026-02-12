@@ -215,12 +215,14 @@ function runAway(event) {
         if (distance >= 100) return
     }
 
+    const viewportW = window.innerWidth
+    const viewportH = window.innerHeight
     const btnW = noBtn.offsetWidth
     const btnH = noBtn.offsetHeight
     const minX = safeMargin
     const minY = safeMargin
-    const maxX = Math.max(minX, window.innerWidth - btnW - safeMargin)
-    const maxY = Math.max(minY, window.innerHeight - btnH - safeMargin)
+    const maxX = Math.max(minX, viewportW - btnW - safeMargin)
+    const maxY = Math.max(minY, viewportH - btnH - safeMargin)
 
     const randomX = minX + Math.random() * (maxX - minX)
     const randomY = minY + Math.random() * (maxY - minY)
