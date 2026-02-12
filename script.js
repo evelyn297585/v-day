@@ -12,12 +12,12 @@ const noStages = [
 let noClickCount = 0;
 let runawayEnabled = false;
 
-// Función para activar música al primer clic
-document.addEventListener('click', () => {
+// SOLUCIÓN MÚSICA: Se activa al primer clic en cualquier parte
+document.addEventListener('click', function() {
     const audio = document.getElementById('bg-music');
-    if (audio.paused) {
+    if (audio && audio.paused) {
         audio.muted = false;
-        audio.play();
+        audio.play().catch(e => console.log("Audio waiting for interaction"));
     }
 }, { once: true });
 
@@ -34,13 +34,15 @@ function handleNoClick() {
     if (noClickCount < noStages.length) {
         const stage = noStages[noClickCount];
         noBtn.textContent = stage.message;
-        catGif.src = stage.gif; // Forzamos el cambio de GIF
         
-        const currentFontSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-        if (currentFontSize < 70) { 
-            yesBtn.style.fontSize = (currentFontSize * 1.2) + "px";
+        // FORZAR CAMBIO DE GIF: Eliminamos y reasignamos
+        catGif.src = ""; 
+        setTimeout(() => { catGif.src = stage.gif; }, 10);
+        
+        const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+        if (currentSize < 60) { // Límite para que no rompa el cel
+            yesBtn.style.fontSize = (currentSize * 1.3) + "px";
         }
-        
         noClickCount++;
     }
 
@@ -49,27 +51,32 @@ function handleNoClick() {
     }
 }
 
-function handleYesClick() {
-    window.location.href = "yes.html";
-}
+function handleYesClick() { window.location.href = "yes.html"; }
 
 function enableRunaway() {
     runawayEnabled = true;
     const noBtn = document.getElementById('no-btn');
     noBtn.style.position = 'fixed';
+    noBtn.style.zIndex = '9999';
     noBtn.textContent = "Well, you're stuck with me now 😏❤️";
     
+    // DETECCIÓN AGRESIVA: 200px de distancia para que no lo alcances
     document.addEventListener('mousemove', (e) => {
+        if (!runawayEnabled) return;
         const btnRect = noBtn.getBoundingClientRect();
-        const dist = Math.hypot(e.clientX - (btnRect.left + btnRect.width/2), e.clientY - (btnRect.top + btnRect.height/2));
-        if (dist < 120) moveButton();
+        const x = btnRect.left + btnRect.width / 2;
+        const y = btnRect.top + btnRect.height / 2;
+        const dist = Math.hypot(e.clientX - x, e.clientY - y);
+        
+        if (dist < 200) { moveButton(); }
     });
 }
 
 function moveButton() {
     const noBtn = document.getElementById('no-btn');
-    const maxX = window.innerWidth - noBtn.offsetWidth - 50;
-    const maxY = window.innerHeight - noBtn.offsetHeight - 50;
-    noBtn.style.left = Math.max(20, Math.random() * maxX) + 'px';
-    noBtn.style.top = Math.max(20, Math.random() * maxY) + 'px';
+    const padding = 100;
+    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+    noBtn.style.left = Math.max(padding, Math.random() * maxX) + 'px';
+    noBtn.style.top = Math.max(padding, Math.random() * maxY) + 'px';
 }
