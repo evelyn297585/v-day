@@ -16,16 +16,12 @@ function handleNoClick() {
     const noBtn = document.getElementById('no-btn');
     const yesBtn = document.getElementById('yes-btn');
     const catGif = document.getElementById('cat-gif');
-    const subtext = document.querySelector('.subtext');
     const audio = document.getElementById('bg-music');
 
-    // MÚSICA: El truco del programador original (reproduce al primer toque)
-    if (audio && audio.paused) {
-        audio.play().catch(e => console.log("Audio waiting for user click"));
+    // MÚSICA: Se activa con el primer clic del usuario
+    if (audio.paused) {
+        audio.play().catch(e => console.log("Audio waiting for interaction"));
     }
-
-    // Limpiar el subtexto después del primer clic
-    if (subtext) subtext.style.display = 'none';
 
     if (runawayEnabled) {
         moveButton();
@@ -36,14 +32,15 @@ function handleNoClick() {
         const stage = noStages[noClickCount];
         noBtn.textContent = stage.message;
         
-        // TRUCO GIF: Resetear el src para obligar al navegador a recargar
-        catGif.src = "";
-        setTimeout(() => { catGif.src = stage.gif; }, 50);
-        
+        // CAMBIO DE GIF: Forzamos la recarga de la imagen
+        catGif.src = stage.gif;
+
+        // CRECIMIENTO DEL BOTÓN YES: Límite de 80px para no romper el cel
         const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-        if (currentSize < 75) {
+        if (currentSize < 80) {
             yesBtn.style.fontSize = (currentSize * 1.3) + "px";
         }
+        
         noClickCount++;
     }
 
@@ -62,20 +59,24 @@ function enableRunaway() {
     noBtn.style.position = 'fixed';
     noBtn.style.zIndex = '1000';
     
-    // El mouse no lo alcanza (Radio de 200px)
+    // RADAR DE HUIDA: Si el mouse se acerca a menos de 200px, el botón salta
     document.addEventListener('mousemove', (e) => {
         if (!runawayEnabled) return;
         const btnRect = noBtn.getBoundingClientRect();
-        const dist = Math.hypot(e.clientX - (btnRect.left + btnRect.width/2), e.clientY - (btnRect.top + btnRect.height/2));
+        const x = btnRect.left + btnRect.width / 2;
+        const y = btnRect.top + btnRect.height / 2;
+        const dist = Math.hypot(e.clientX - x, e.clientY - y);
+        
         if (dist < 200) moveButton();
     });
 }
 
 function moveButton() {
     const noBtn = document.getElementById('no-btn');
-    const padding = 100;
+    const padding = 80;
     const maxX = window.innerWidth - noBtn.offsetWidth - padding;
     const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+    
     noBtn.style.left = Math.max(padding, Math.random() * maxX) + 'px';
     noBtn.style.top = Math.max(padding, Math.random() * maxY) + 'px';
 }
