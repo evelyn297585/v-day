@@ -12,19 +12,20 @@ const noStages = [
 let noClickCount = 0;
 let runawayEnabled = false;
 
-// ACTIVAR MÚSICA AL PRIMER CLIC
-document.body.addEventListener('click', function() {
-    const audio = document.getElementById('bg-music');
-    if (audio.paused) {
-        audio.muted = false;
-        audio.play().catch(e => console.log("Audio play blocked"));
-    }
-}, { once: true });
-
 function handleNoClick() {
     const noBtn = document.getElementById('no-btn');
     const yesBtn = document.getElementById('yes-btn');
     const catGif = document.getElementById('cat-gif');
+    const subtext = document.querySelector('.subtext');
+    const audio = document.getElementById('bg-music');
+
+    // MÚSICA: El truco del programador original (reproduce al primer toque)
+    if (audio && audio.paused) {
+        audio.play().catch(e => console.log("Audio waiting for user click"));
+    }
+
+    // Limpiar el subtexto después del primer clic
+    if (subtext) subtext.style.display = 'none';
 
     if (runawayEnabled) {
         moveButton();
@@ -35,15 +36,14 @@ function handleNoClick() {
         const stage = noStages[noClickCount];
         noBtn.textContent = stage.message;
         
-        // ACTUALIZACIÓN DE GIF FORZADA
-        catGif.src = stage.gif;
-
-        // CRECIMIENTO LIMITADO DEL BOTÓN YES
+        // TRUCO GIF: Resetear el src para obligar al navegador a recargar
+        catGif.src = "";
+        setTimeout(() => { catGif.src = stage.gif; }, 50);
+        
         const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-        if (currentSize < 70) {
+        if (currentSize < 75) {
             yesBtn.style.fontSize = (currentSize * 1.3) + "px";
         }
-        
         noClickCount++;
     }
 
@@ -60,19 +60,14 @@ function enableRunaway() {
     runawayEnabled = true;
     const noBtn = document.getElementById('no-btn');
     noBtn.style.position = 'fixed';
-    noBtn.textContent = "Well, you're stuck with me now 😏❤️";
+    noBtn.style.zIndex = '1000';
     
-    // DETECCIÓN A 200PX (Imposible de alcanzar)
-    document.addEventListener('mousemove', function(e) {
+    // El mouse no lo alcanza (Radio de 200px)
+    document.addEventListener('mousemove', (e) => {
         if (!runawayEnabled) return;
         const btnRect = noBtn.getBoundingClientRect();
-        const x = btnRect.left + btnRect.width / 2;
-        const y = btnRect.top + btnRect.height / 2;
-        const dist = Math.hypot(e.clientX - x, e.clientY - y);
-        
-        if (dist < 200) {
-            moveButton();
-        }
+        const dist = Math.hypot(e.clientX - (btnRect.left + btnRect.width/2), e.clientY - (btnRect.top + btnRect.height/2));
+        if (dist < 200) moveButton();
     });
 }
 
