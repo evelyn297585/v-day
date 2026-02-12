@@ -25,13 +25,13 @@ function handleNoClick() {
     if (noClickCount < noStages.length) {
         const stage = noStages[noClickCount];
         noBtn.textContent = stage.message;
-        catGif.src = stage.gif;
+        catGif.src = stage.gif; // CAMBIO DE GIF GARANTIZADO
         
-        // CRECIMIENTO CONTROLADO
-        const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-        if (currentSize < 150) { // Límite para que no se salga de la pantalla
-            yesBtn.style.fontSize = (currentSize * 1.15) + "px";
-            yesBtn.style.padding = (parseFloat(window.getComputedStyle(yesBtn).padding) * 1.05) + "px";
+        // CRECIMIENTO CON LÍMITE ESTRICTO
+        const currentFontSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+        if (currentFontSize < 80) { // No crecerá más de este tamaño (aprox 40% de un cel)
+            yesBtn.style.fontSize = (currentFontSize * 1.2) + "px";
+            yesBtn.style.padding = "20px 40px"; // Mantiene forma de botón
         }
         
         noClickCount++;
@@ -50,29 +50,20 @@ function enableRunaway() {
     runawayEnabled = true;
     const noBtn = document.getElementById('no-btn');
     noBtn.style.position = 'fixed';
-    noBtn.style.zIndex = '1000'; // Siempre por encima de todo
-    noBtn.style.transition = 'all 0.15s ease-out';
-    
-    // Cambiar texto final para que sepa que ya no puede clicar
+    noBtn.style.zIndex = '1000';
     noBtn.textContent = "Well, you're stuck with me now 😏❤️";
-
+    
     document.addEventListener('mousemove', (e) => {
-        if (!runawayEnabled) return;
         const btnRect = noBtn.getBoundingClientRect();
         const dist = Math.hypot(e.clientX - (btnRect.left + btnRect.width/2), e.clientY - (btnRect.top + btnRect.height/2));
-        if (dist < 120) moveButton();
+        if (dist < 100) moveButton();
     });
 }
 
 function moveButton() {
     const noBtn = document.getElementById('no-btn');
-    const padding = 80; // Más espacio para que no se pegue a las orillas
-    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-    
-    const newX = Math.max(padding, Math.random() * maxX);
-    const newY = Math.max(padding, Math.random() * maxY);
-    
-    noBtn.style.left = newX + 'px';
-    noBtn.style.top = newY + 'px';
+    const maxX = window.innerWidth - noBtn.offsetWidth - 40;
+    const maxY = window.innerHeight - noBtn.offsetHeight - 40;
+    noBtn.style.left = Math.max(20, Math.random() * maxX) + 'px';
+    noBtn.style.top = Math.max(20, Math.random() * maxY) + 'px';
 }
